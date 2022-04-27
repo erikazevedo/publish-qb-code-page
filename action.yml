@@ -1,5 +1,6 @@
 name: 'Publish Code Page to Quickbase'
 description: 'Publish a code page to a Quickbase realm'
+author: 'Ben Smith'
 inputs:
   realm:  # id of input
     description: 'The Quickbase realm, i.e. realm.quickbase.com'
