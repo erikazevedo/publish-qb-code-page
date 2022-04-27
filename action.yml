@@ -1,0 +1,49 @@
+name: 'Publish Code Page to Quickbase'
+description: 'Publish a code page to a Quickbase realm'
+inputs:
+  realm:  # id of input
+    description: 'The Quickbase realm, i.e. realm.quickbase.com'
+    required: true
+  dbid:
+    description: 'The main dbid, or appid, of the realm'
+    required: true
+  usertoken:
+    description: 'A valid usertoken with rights to create a code page'
+    required: true
+  path:
+    description: 'The repository filepath of the code page'
+    required: true
+  filename:
+    description: 'The filename of the code page, with extension'
+    required: true
+  pageid:
+    description: 'The page ID of the code page'
+    required: false
+    default: 0
+runs:
+  using: "composite"
+  steps:
+  # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    - name: Read code page
+      id: package
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ${{ github.workspace }}/${{ inputs.filename }}
+    - name: Deploy Update
+      if: ${{inputs.pageid}} == 0
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://${{ inputs.realm }}/db/${{ inputs.dbid }}'
+        method: 'POST'
+        customHeaders: '{"Content-Type":"application/xml","QUICKBASE-ACTION":"API_AddReplaceDBPage"}'
+        data: <qdbapi><pageid>${{ inputs.pageid }}</pageid><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>
+      - name: Deploy New Page
+      if: ${{inputs.pageid}} != 0
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://${{ inputs.realm }}/db/${{ inputs.dbid }}'
+        method: 'POST'
+        customHeaders: '{"Content-Type":"application/xml","QUICKBASE-ACTION":"API_AddReplaceDBPage"}'
+        data: <qdbapi><pagename>${{ inputs.filename }}</pagename><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>
+  
