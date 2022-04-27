@@ -32,10 +32,19 @@ runs:
       with:
         path: ${{ github.workspace }}/${{ inputs.filename }}
     - name: Deploy Update
-      if: ${{inputs.pageid}} == 0
+      if: ${{ inputs.pageid == 0 }}
       uses: fjogeleit/http-request-action@v1
       with:
         url: 'https://${{ inputs.realm }}/db/${{ inputs.dbid }}'
         method: 'POST'
         customHeaders: '{"Content-Type":"application/xml","QUICKBASE-ACTION":"API_AddReplaceDBPage"}'
         data: '<qdbapi><pageid>${{ inputs.pageid }}</pageid><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>'
+    - name: Deploy New Page
+      if: ${{ inputs.pageid != 0 }}
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://${{ inputs.realm }}/db/${{ inputs.dbid }}'
+        method: 'POST'
+        customHeaders: '{"Content-Type":"application/xml","QUICKBASE-ACTION":"API_AddReplaceDBPage"}'
+        data: '<qdbapi><pagename>${{ inputs.filename }}</pagename><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>'
+  
