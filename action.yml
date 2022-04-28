@@ -30,7 +30,7 @@ runs:
       id: package
       uses: juliangruber/read-file-action@v1
       with:
-        path: ${{ github.workspace }}/${{ inputs.filename }}
+        path: ${{ inputs.path }}/${{ inputs.filename }}
     - name: Deploy Update
       if: ${{ inputs.pageid == 0 }}
       uses: fjogeleit/http-request-action@v1
