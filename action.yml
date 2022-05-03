@@ -41,6 +41,7 @@ runs:
         customHeaders: '{"Content-Type":"application/xml","QUICKBASE-ACTION":"API_AddReplaceDBPage"}'
         data: '<qdbapi><pageid>${{ inputs.pageid }}</pageid><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>'
     - name: Show Response
+      shell: bash
       run: echo ${{ steps.updateRequest.outputs.response }}
     - name: Deploy New Page
       id: newRequest
@@ -52,5 +53,6 @@ runs:
         customHeaders: '{"Content-Type":"application/xml","QUICKBASE-ACTION":"API_AddReplaceDBPage"}'
         data: '<qdbapi><pagename>${{ inputs.filename }}</pagename><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>'
     - name: Show Response
+      shell: bash
       run: echo ${{ steps.newRequest.outputs.response }}
   
