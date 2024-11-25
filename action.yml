@@ -25,7 +25,6 @@ runs:
   using: "composite"
   steps:
   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
     - name: Read code page
       id: package
       uses: juliangruber/read-file-action@v1
