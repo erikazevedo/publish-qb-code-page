@@ -14,19 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Insert steps here
       - name: Publish Code Page to Quickbase
         uses: erikazevedo/publish-qb-code-page@v0.5.1
         with:
           # The Quickbase realm, i.e. realm.quickbase.com
             realm: realm.quickbase.com
-            # The main dbid, or appid, of the realm
+          # The main dbid, or appid, of the realm
             dbid: br844uajz
-            # A valid usertoken with rights to create a code page
+          # A valid usertoken with rights to create a code page
             usertoken: ${{ secrets.usertoken }}
-            # The repository filepath of the code page
+          # The repository filepath of the code page
             path: ${{ github.workspace }}
-            # The filename of the code page, with extension
+          # The filename of the code page, with extension
             filename: index.html
-            # The page ID of the code page
+          # The page ID of the code page
             pageid: 5
 ```
