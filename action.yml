@@ -1,8 +1,8 @@
 name: 'Publish Code Page to Quickbase'
 description: 'Publish a code page to a Quickbase realm'
-author: 'Ben Smith'
+author: 'Erik Azevedo'
 inputs:
-  realm:  # id of input
+  realm:
     description: 'The Quickbase realm, i.e. realm.quickbase.com'
     required: true
   dbid:
@@ -24,31 +24,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-  # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Read code page
-      id: package
-      uses: juliangruber/read-file-action@v1
-      with:
-        path: ${{ inputs.path }}/${{ inputs.filename }}
-    - name: Deploy Update
+    - name: Deploy Update To Quickbase
       shell: bash
       run: |
         echo "<qdbapi><pageid>${{ inputs.pageid }}</pageid><pagetype>1</pagetype><pagebody><![CDATA[" > output
         cat ${{ inputs.path }}/${{ inputs.filename }} >> output
         echo "]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>" >> output
-        
         curl -X POST \
           -H "Content-Type: application/xml" \
           -H "QUICKBASE-ACTION: API_AddReplaceDBPage" \
           --data-binary "@output" \
           https://${{ inputs.realm }}/db/${{ inputs.dbid }}
-    # - name: Deploy Update
-    #   id: updateRequest
-    #   if: ${{ inputs.pageid != 0 }}
-    #   uses: fjogeleit/http-request-action@v1
-    #   with:
-    #     url: 'https://${{ inputs.realm }}/db/${{ inputs.dbid }}'
-    #     method: 'POST'
-    #     customHeaders: '{"Content-Type":"application/xml","QUICKBASE-ACTION":"API_AddReplaceDBPage"}'
-    #     data: '<qdbapi><pageid>${{ inputs.pageid }}</pageid><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>'
-  
