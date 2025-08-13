@@ -33,10 +33,15 @@ runs:
     - name: Deploy Update
       shell: bash
       run: |
+        echo "<qdbapi><pageid>${{ inputs.pageid }}</pageid><pagetype>1</pagetype><pagebody><![CDATA[" > output
+        cat ${{ inputs.path }}/${{ inputs.filename }} >> output
+        echo "]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>" >> output
+        
         curl -X POST \
           -H "Content-Type: application/xml" \
           -H "QUICKBASE-ACTION: API_AddReplaceDBPage" \
-          -d '<qdbapi><pageid>${{ inputs.pageid }}</pageid><pagetype>1</pagetype><pagebody><![CDATA[${{steps.package.outputs.content}}]]></pagebody><usertoken>${{ inputs.usertoken }}</usertoken></qdbapi>'
+          --data-binary "@output" \
+          https://${{ inputs.realm }}/db/${{ inputs.dbid }}
     # - name: Deploy Update
     #   id: updateRequest
     #   if: ${{ inputs.pageid != 0 }}
